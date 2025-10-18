@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Customer Database (VA Esthetic)</title>
+<link rel="icon" type="image/png" href="https://optim.tildacdn.net/tild6365-6135-4862-b266-303665313564/-/resize/169x/-/format/webp/a.png.webp">
+<body>
+</body>
+<script style="position: absolute;">
+
+const validPasswords = [
+  "visolaalla",
+  "Visolaalla",
+];
+
+const entered = prompt("Welcome Visola, Please Enter Password:");
+
+
+if (!validPasswords.includes(entered)) {
+
+  document.documentElement.innerHTML = `
+      
+        <h1 style="font-size:70px;color:#ff4c4c;text-align: center;">❌ ACCESS DENIED</h1>
+        <p style="font-size:49px;color:#c4b16a;text-align: center;">You do not have permission to view this page.</p>
+      
+  `;
+
+  throw new Error("Access denied");
+}
+</script>
+<style>
+  :root{--bg:#c4b16a;--card:#fff;--accent:#000000;--muted:#6b6b6b}
+  *{box-sizing:border-box}
+  body{font-family:Inter,system-ui,Arial;margin:0;background:var(--bg);color:#111;padding:20px}
+  .wrap{max-width:1100px;margin:0 auto}
+  header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+  header h1{margin:0;font-size:22px;color:#000000}
+  .card{background:var(--card);padding:12px;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,0.08)}
+  label{display:block;margin-top:8px;font-size:13px}
+  input,select,textarea,button{font-family:inherit}
+  input[type="text"], input[type="email"], input[type="tel"], textarea, select{
+    width:100%;padding:8px;border-radius:8px;border:1px solid #e6e9ef;margin-top:4px;
+  }
+  textarea{min-height:80px}
+  .controls{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+  .btn{background:var(--accent);color:white;border:none;padding:8px 10px;border-radius:8px;cursor:pointer}
+  .btn.ghost{background:#f3f4f6;color:#111;border:1px solid #e6e9ef}
+  table{width:100%;border-collapse:collapse;margin-top:10px}
+  th,td{padding:8px;border-bottom:1px solid #eef1f3;text-align:left;font-size:14px}
+  .actions button{margin-right:6px}
+  footer{margin-top:12px;font-size:13px;color:var(--muted)}
+</style>
+</head>
+  
+
+
+
+<div class="wrap">
+  <header>
+    <h1><img src="https://optim.tildacdn.net/tild6365-6135-4862-b266-303665313564/-/resize/169x/-/format/webp/a.png.webp" height="50px" alt="">Customer Database — VA Esthetic NYC</h1>
+  </header>
+
+  <div class="card">  
+    <table>
+      <thead><tr><th>Name</th><th>Contact</th><th>Notes</th><th>Address</th><th>Actions</th></tr></thead>
+      <tbody id="listBody"></tbody>
+    </table>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <form id="custForm">
+      <input type="hidden" id="custId" />
+ <label>Name</label>
+<input id="name" type="text" placeholder="Enter customer name" />
+
+<script>
+const nameInput = document.getElementById("name");
+
+nameInput.addEventListener("input", (e) => {
+  const el = e.target;
+  const pos = el.selectionStart;
+  const oldVal = el.value;
+
+
+  const newVal = oldVal.replace(/(^|\s)([a-z])/g, (_, space, letter) => space + letter.toUpperCase());
+
+  if (newVal !== oldVal) {
+    el.value = newVal;
+    el.setSelectionRange(pos, pos);
+  }
+});
+</script>
+
+      <label>Address</label><input id="address" placeholder="Enter Address" type="text" />
+      <label>Email</label><input id="email" placeholder="Enter Email" type="email" />
+      <label>Phone</label><input id="phone" placeholder="Enter Phone Number" type="tel" />
+      <label>Card Brand</label>
+      <select id="card_brand">
+        <option value="">— none —</option>
+        <option>Visa</option><option>Mastercard</option><option>Amex</option><option>Discover</option><option>Other</option>
+      </select>
+      <label>Card Number 4 Digit</label><input id="card_last4"  inputmode="numeric" placeholder="" />
+      <label>Notes - Card Number</label><textarea id="notes" placeholder=" e.g. 12345689 exp 01/25 cvv 1234"></textarea>  
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <button id="saveBtn" class="btn" type="submit">Save</button>
+        <button id="cancelBtn" type="button" class="btn ghost">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script type="module">
+  const firebaseConfig = {
+  apiKey: "AIzaSyAwH9t7ir6WkJrJK0S4jcoxeSQKN3PNgqI",
+  authDomain: "database-visola.firebaseapp.com",
+  projectId: "database-visola",
+  storageBucket: "database-visola.firebasestorage.app",
+  messagingSenderId: "722697883577",
+  appId: "1:722697883577:web:7d791ab841c4572bf23068",
+  measurementId: "G-5MS8QC9DVY"
+
+  };
+
+const phoneInput = document.getElementById('phone');
+
+phoneInput.addEventListener('input', () => {
+
+  let digits = phoneInput.value.replace(/\D/g, '');
+
+
+  if (digits.length > 10) digits = digits.slice(0, 10);
+
+  let formatted = '';
+  if (digits.length > 0) formatted = digits.slice(0, 3);
+  if (digits.length >= 4) formatted += '-' + digits.slice(3, 6);
+  if (digits.length >= 7) formatted += '-' + digits.slice(6, 10);
+
+  phoneInput.value = formatted;
+});
+
+
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+  import { getFirestore, collection, doc, setDoc, addDoc, onSnapshot, orderBy, query, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const listBody = document.getElementById('listBody');
+  const custForm = document.getElementById('custForm');
+  const custId = document.getElementById('custId');
+  const nameEl = document.getElementById('name');
+  const addressEl = document.getElementById('address');
+  const emailEl = document.getElementById('email');
+  const phoneEl = document.getElementById('phone');
+  const cardBrandEl = document.getElementById('card_brand');
+  const cardLast4El = document.getElementById('card_last4');
+  const notesEl = document.getElementById('notes');
+  const newBtn = document.getElementById('newBtn');
+  const exportBtn = document.getElementById('exportBtn');
+  const importBtn = document.getElementById('importBtn');
+  const importFile = document.getElementById('importFile');
+  const clearAllBtn = document.getElementById('clearAllBtn');
+  const toggleNamesBtn = document.getElementById('toggleNamesBtn');
+
+  const q = query(collection(db, 'customers'), orderBy('updated','desc'));
+  onSnapshot(q, snap => {
+    const docs = [];
+    snap.forEach(d => docs.push({id:d.id, ...d.data()}));
+    renderList(docs);
+  });
+
+function renderList(items){
+  listBody.innerHTML = '';
+  items.forEach(c=>{
+    const contact = [c.email,c.phone].filter(Boolean).join(' • ');
+    const card = c.card_brand ? `${c.card_brand} • **** ${c.card_last4||'----'}` : '—';
+
+
+    const mapLink = c.address
+      ? `<a href="https://www.google.com/maps/search/${encodeURIComponent(c.address)}"
+            target="_blank" style="color:#1f7aef;text-decoration:none;">
+            📍 ${c.address}
+         </a>`
+      : '—';
+
+    const tr=document.createElement('tr');
+    tr.innerHTML = `
+      <td class="nameCell">${c.name||''}</td>
+      <td>${contact}</td>
+      <td>${card}</td>
+      <td>${mapLink}<br>${c.notes||''}</td>
+      <td class="actions">
+        <button class="btn ghost editBtn" data-id="${c.id}">Edit</button>
+        <button class="btn ghost delBtn" data-id="${c.id}">Del</button>
+      </td>`;
+    listBody.appendChild(tr);
+  });
+
+  document.querySelectorAll('.editBtn').forEach(b=>b.onclick=()=>loadDoc(b.dataset.id));
+  document.querySelectorAll('.delBtn').forEach(b=>b.onclick=()=>delDoc(b.dataset.id));
+}
+
+
+  async function loadDoc(id){
+    const snap = await getDocs(collection(db,'customers'));
+    const d = snap.docs.find(x=>x.id===id);
+    if(!d)return;
+    const c=d.data();
+    custId.value=id;
+    nameEl.value=c.name||''; addressEl.value=c.address||''; emailEl.value=c.email||'';
+    phoneEl.value=c.phone||''; cardBrandEl.value=c.card_brand||''; cardLast4El.value=c.card_last4||'';
+    notesEl.value=c.notes||'';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  async function delDoc(id){
+    if(confirm('Delete this record?')) await deleteDoc(doc(db,'customers',id));
+  }
+
+  custForm.onsubmit = async e=>{
+    e.preventDefault();
+    const last4 = (cardLast4El.value||'').replace(/\D/g,'').slice(-4);
+    const data = {
+      name:nameEl.value.trim(),
+      address:addressEl.value.trim(),
+      email:emailEl.value.trim(),
+      phone:phoneEl.value.trim(),
+      card_brand:cardBrandEl.value,
+      card_last4:last4,
+      notes:notesEl.value.trim(),
+      updated:new Date().toISOString()
+    };
+    if(custId.value) await setDoc(doc(db,'customers',custId.value),data,{merge:true});
+    else await addDoc(collection(db,'customers'),data);
+    custForm.reset(); custId.value='';
+  };
+
+  newBtn.onclick=()=>{custForm.reset();custId.value='';};
+  clearAllBtn.onclick=async()=>{
+    if(confirm('Delete ALL customers?')){
+      const snap=await getDocs(collection(db,'customers'));
+      for(const d of snap.docs) await deleteDoc(doc(db,'customers',d.id));
+    }
+  };
+
+  exportBtn.onclick=async()=>{
+    const snap=await getDocs(collection(db,'customers'));
+    const rows=[['id','name','address','email','phone','card_brand','card_last4','notes','updated']];
+    snap.forEach(d=>{
+      const r=d.data();
+      rows.push([d.id,r.name||'',r.address||'',r.email||'',r.phone||'',r.card_brand||'',r.card_last4||'',r.notes||'',r.updated||'']);
+    });
+    const csv=rows.map(r=>r.map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob=new Blob([csv],{type:'text/csv'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='customers.csv';a.click();
+  };
+
+  importBtn.onclick=()=>importFile.click();
+  importFile.onchange=async e=>{
+    const f=e.target.files[0];if(!f)return;
+    const text=await f.text();const lines=text.split(/\r?\n/).filter(Boolean).map(l=>parseCSVRow(l));
+    const header=lines.shift().map(h=>h.toLowerCase());const idx=n=>header.indexOf(n);
+    for(const r of lines){
+      const c={name:r[idx('name')]||'',address:r[idx('address')]||'',email:r[idx('email')]||'',
+      phone:r[idx('phone')]||'',card_brand:r[idx('card_brand')]||'',card_last4:(r[idx('card_last4')]||'').slice(-4),
+      notes:r[idx('notes')]||'',updated:new Date().toISOString()};
+      await addDoc(collection(db,'customers'),c);
+    }
+    alert('Import complete!');
+  };
+
+  function parseCSVRow(l){const out=[];let cur='',q=false;for(let i=0;i<l.length;i++){const c=l[i];
+    if(q){if(c=='"'&&l[i+1]=='"'){cur+='"';i++;}else if(c=='"'){q=false;}else cur+=c;}
+    else{if(c==','){out.push(cur);cur='';}else if(c=='"'){q=true;}else cur+=c;}}
+    out.push(cur);return out;}
+
+  let namesHidden = false;
+  toggleNamesBtn.addEventListener('click', () => {
+    namesHidden = !namesHidden;
+    const nameCells = document.querySelectorAll('.nameCell');
+    nameCells.forEach(td => {
+      td.style.visibility = namesHidden ? 'hidden' : 'visible';
+    });
+    toggleNamesBtn.textContent = namesHidden ? 'Show Names' : 'Hide Names';
+  });
+</script>
+</body>
+</html>
