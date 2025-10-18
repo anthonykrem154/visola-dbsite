@@ -197,6 +197,7 @@ function renderList(items){
     listBody.appendChild(tr);
   });
 
+  
   document.querySelectorAll('.editBtn').forEach(b=>b.onclick=()=>loadDoc(b.dataset.id));
   document.querySelectorAll('.delBtn').forEach(b=>b.onclick=()=>delDoc(b.dataset.id));
 }
